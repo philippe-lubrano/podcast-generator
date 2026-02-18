@@ -42,17 +42,13 @@ function HomePage() {
 
     try {
       const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-      const session = await supabase.auth.getSession();
-      
-      if (!session.data.session) {
-        throw new Error('Vous devez être connecté pour générer un podcast');
-      }
+      const { data: { session } } = await supabase.auth.getSession();
 
       const response = await fetch(`${supabaseUrl}/functions/v1/generate-podcast`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.data.session.access_token}`,
+          'Authorization': `Bearer ${session?.access_token}`,
         },
       });
 

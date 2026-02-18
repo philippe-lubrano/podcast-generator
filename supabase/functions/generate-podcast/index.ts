@@ -185,7 +185,16 @@ Deno.serve(async (req: Request) => {
     }
 
     // Check if user email is in the allowed list
-    const emailList = allowedEmails.split(",").map(e => e.trim().toLowerCase());
+    if (!allowedEmails || allowedEmails.trim() === "") {
+      return new Response(
+        JSON.stringify({ 
+          error: "Configuration manquante. La liste des emails autorisés n'est pas configurée." 
+        }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const emailList = allowedEmails.split(",").map(e => e.trim().toLowerCase()).filter(e => e.length > 0);
     const userEmail = user.email?.toLowerCase();
     
     if (!userEmail || !emailList.includes(userEmail)) {

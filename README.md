@@ -52,6 +52,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=votre_clé_anon_supabase
    - Allez dans Authentication > Providers
    - Activez "Email" 
    - Configurez les redirections si nécessaire
+   - Voir [AUTHENTICATION.md](./AUTHENTICATION.md) pour un guide détaillé
 
 ## Base de données
 

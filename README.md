@@ -4,6 +4,8 @@ Une application Next.js permettant de générer des mini-podcasts audio à la de
 
 ## Fonctionnalités
 
+- **Authentification Supabase** : Système de connexion sécurisé avec email/mot de passe
+- **Contrôle d'accès** : Liste blanche d'emails autorisés pour générer des podcasts
 - **Génération automatique de podcasts** : Cliquez sur un bouton pour générer un briefing audio personnalisé
 - **Agrégation de sources RSS** : Récupère les derniers articles de Hacker News, React Status, TypeScript Weekly et TLDR AI
 - **IA pour la synthèse** : Utilise Google Gemini pour créer un script de podcast dynamique et engageant
@@ -44,6 +46,12 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=votre_clé_anon_supabase
 4. Configurez les secrets Supabase pour l'edge function :
    - `GEMINI_API_KEY` : Votre clé API Google Gemini
    - `GOOGLE_CLOUD_API_KEY` : Votre clé API Google Cloud pour TTS
+   - `ALLOWED_EMAILS` : Liste des emails autorisés (ex: `email1@example.com,email2@example.com`)
+
+5. Activez l'authentification Email dans les paramètres Supabase :
+   - Allez dans Authentication > Providers
+   - Activez "Email" 
+   - Configurez les redirections si nécessaire
 
 ## Base de données
 
@@ -98,11 +106,14 @@ npm start
 
 ## Utilisation
 
-1. Cliquez sur "Générer le briefing du jour"
-2. Attendez quelques instants pendant la génération (30-60 secondes)
-3. Écoutez votre podcast avec le lecteur intégré
-4. Consultez les sources utilisées
-5. Accédez à vos podcasts précédents dans l'historique
+1. Créez un compte ou connectez-vous avec vos identifiants
+2. Votre email doit être dans la liste ALLOWED_EMAILS pour accéder à l'application
+3. Cliquez sur "Générer le briefing du jour"
+4. Attendez quelques instants pendant la génération (30-60 secondes)
+5. Écoutez votre podcast avec le lecteur intégré
+6. Consultez les sources utilisées
+7. Accédez à vos podcasts précédents dans l'historique
+8. Utilisez le bouton de déconnexion pour vous déconnecter
 
 ## Personnalisation
 

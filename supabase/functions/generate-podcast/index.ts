@@ -161,6 +161,41 @@ Deno.serve(async (req: Request) => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const geminiApiKey = Deno.env.get("GEMINI_API_KEY");
     const googleApiKey = Deno.env.get("GOOGLE_CLOUD_API_KEY");
+    const allowedEmails = Deno.env.get("ALLOWED_EMAILS") || "";
+
+    // Verify authentication
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: "Authentication requise" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const token = authHeader.replace("Bearer ", "");
+    const supabaseClient = createClient(supabaseUrl, supabaseKey);
+    
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser(token);
+    
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: "Token invalide ou expiré" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Check if user email is in the allowed list
+    const emailList = allowedEmails.split(",").map(e => e.trim().toLowerCase());
+    const userEmail = user.email?.toLowerCase();
+    
+    if (!userEmail || !emailList.includes(userEmail)) {
+      return new Response(
+        JSON.stringify({ 
+          error: "Accès non autorisé. Votre email n'est pas dans la liste des utilisateurs autorisés." 
+        }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
     if (!geminiApiKey || !googleApiKey) {
       return new Response(

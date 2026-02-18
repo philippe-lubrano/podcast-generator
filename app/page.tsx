@@ -2,17 +2,20 @@
 
 import { useState, useEffect } from 'react';
 import { supabase, type Podcast } from '@/lib/supabase';
+import { useAuth } from '@/lib/auth-context';
+import { ProtectedRoute } from '@/components/protected-route';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, Radio, Sparkles, ExternalLink, Clock, Calendar } from 'lucide-react';
+import { Loader2, Radio, Sparkles, ExternalLink, Clock, Calendar, LogOut } from 'lucide-react';
 import { PodcastPlayer } from '@/components/podcast-player';
 import { SourcesList } from '@/components/sources-list';
 
-export default function Home() {
+function HomePage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [currentPodcast, setCurrentPodcast] = useState<Podcast | null>(null);
   const [recentPodcasts, setRecentPodcasts] = useState<Podcast[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const { user, signOut } = useAuth();
 
   useEffect(() => {
     loadRecentPodcasts();
@@ -39,10 +42,17 @@ export default function Home() {
 
     try {
       const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const session = await supabase.auth.getSession();
+      
+      if (!session.data.session) {
+        throw new Error('Vous devez être connecté pour générer un podcast');
+      }
+
       const response = await fetch(`${supabaseUrl}/functions/v1/generate-podcast`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.data.session.access_token}`,
         },
       });
 
@@ -83,6 +93,20 @@ export default function Home() {
 
       <div className="relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="flex justify-end mb-4">
+            <div className="flex items-center gap-4">
+              <span className="text-gray-400 text-sm">{user?.email}</span>
+              <Button
+                onClick={() => signOut()}
+                variant="outline"
+                className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10 hover:text-cyan-300"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Déconnexion
+              </Button>
+            </div>
+          </div>
+
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-3 mb-4">
               <div className="relative">
@@ -251,5 +275,13 @@ export default function Home() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <ProtectedRoute>
+      <HomePage />
+    </ProtectedRoute>
   );
 }

@@ -41,14 +41,27 @@ Dans votre projet Supabase, allez dans **Settings > Edge Functions** et ajoutez 
 # Via la CLI Supabase (recommandé)
 supabase secrets set GEMINI_API_KEY=votre_cle_gemini
 supabase secrets set GOOGLE_CLOUD_API_KEY=votre_cle_google_cloud
+supabase secrets set ALLOWED_EMAILS=email1@example.com,email2@example.com
 
 # Ou via le dashboard Supabase
 # Settings > Edge Functions > Add secret
 ```
 
-**Important** : Ces secrets sont automatiquement configurés et disponibles dans les edge functions. Vous n'avez pas besoin de les ajouter dans votre fichier `.env.local`.
+**Important** : 
+- Ces secrets sont automatiquement configurés et disponibles dans les edge functions
+- Vous n'avez pas besoin de les ajouter dans votre fichier `.env.local`
+- `ALLOWED_EMAILS` contient la liste des emails autorisés à générer des podcasts (séparés par des virgules)
 
-### 5. Migrations de la base de données
+### 5. Configurer l'authentification
+
+1. Allez dans **Authentication > Providers** dans Supabase
+2. Activez le provider **Email**
+3. Configurez les paramètres de confirmation d'email selon vos besoins
+4. Ajoutez vos URLs autorisées dans **Authentication > URL Configuration**
+
+Pour plus de détails, consultez [AUTHENTICATION.md](./AUTHENTICATION.md).
+
+### 6. Migrations de la base de données
 
 Les migrations ont déjà été appliquées automatiquement :
 - Table `podcasts` créée avec RLS activé
@@ -65,6 +78,16 @@ Pour la redéployer manuellement si nécessaire :
 supabase functions deploy generate-podcast
 ```
 
+## Premier utilisateur
+
+1. Ajoutez votre email dans `ALLOWED_EMAILS` (voir étape 4)
+2. Lancez l'application : `npm run dev`
+3. Ouvrez http://localhost:3000
+4. Vous serez redirigé vers `/login`
+5. Créez un compte avec votre email autorisé
+6. Vérifiez votre email si la confirmation est activée
+7. Connectez-vous et générez votre premier podcast !
+
 ## Vérification de la configuration
 
 Pour vérifier que tout fonctionne :
@@ -76,15 +99,38 @@ npm run dev
 
 2. Ouvrez http://localhost:3000
 
-3. Cliquez sur "Générer le briefing du jour"
+3. Connectez-vous avec un compte autorisé
 
-4. Si tout est configuré correctement, vous devriez voir :
+4. Cliquez sur "Générer le briefing du jour"
+
+5. Si tout est configuré correctement, vous devriez voir :
    - Les étapes de génération s'afficher
    - Un podcast audio généré après 30-60 secondes
    - Un lecteur audio fonctionnel
    - La liste des sources utilisées
 
 ## Dépannage
+
+### Erreur "Authentication requise"
+
+Vérifiez que :
+- Vous êtes bien connecté (vérifiez en haut à droite de la page)
+- Votre session n'a pas expiré
+- Les variables d'environnement Supabase sont correctement configurées
+
+### Erreur "Accès non autorisé"
+
+Votre email n'est pas dans la liste ALLOWED_EMAILS :
+- Vérifiez que votre email est bien ajouté dans les secrets Supabase
+- Pas d'espaces superflus dans ALLOWED_EMAILS
+- Format correct : `email1@example.com,email2@example.com`
+
+### Erreur "Configuration manquante"
+
+La variable ALLOWED_EMAILS n'est pas configurée dans l'Edge Function :
+```bash
+supabase secrets set ALLOWED_EMAILS=votre@email.com
+```
 
 ### Erreur "API keys not configured"
 

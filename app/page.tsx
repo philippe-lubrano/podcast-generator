@@ -118,7 +118,7 @@ function HomePage() {
               </h1>
             </div>
             <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-              Votre briefing quotidien sur l'actu tech front-end et IA, généré à la demande
+              Votre briefing quotidien sur l&apos;actu tech front-end et IA, généré à la demande
             </p>
           </div>
 
@@ -167,7 +167,7 @@ function HomePage() {
                     </div>
                     <div className="flex items-center gap-3 text-cyan-400">
                       <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse delay-100" />
-                      <span className="text-sm">Génération du script avec l'IA...</span>
+                      <span className="text-sm">Génération du script avec l&apos;IA...</span>
                     </div>
                     <div className="flex items-center gap-3 text-cyan-400">
                       <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse delay-200" />

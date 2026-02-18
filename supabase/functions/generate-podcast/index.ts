@@ -185,7 +185,7 @@ Deno.serve(async (req: Request) => {
     }
 
     // Check if user email is in the allowed list
-    if (!allowedEmails || allowedEmails.trim() === "") {
+    if (!allowedEmails?.trim()) {
       return new Response(
         JSON.stringify({ 
           error: "Configuration manquante. La liste des emails autorisés n'est pas configurée." 

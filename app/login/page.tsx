@@ -33,8 +33,9 @@ export default function LoginPage() {
       } else {
         await signIn(email, password);
       }
-    } catch (err: any) {
-      setError(err.message || 'Une erreur est survenue');
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error('Une erreur est survenue');
+      setError(error.message);
     } finally {
       setLoading(false);
     }
